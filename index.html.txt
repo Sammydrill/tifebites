@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tife Bites - Premium Cake Delights</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    <!-- Flutterwave Payment -->
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e63946;
+            --secondary: #f1faee;
+            --accent: #a8dadc;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+            --text: #333333;
+            --text-light: #6c757d;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text);
+            background-color: var(--secondary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Improved Responsive Typography */
+        html {
+            font-size: 16px;
+        }
+        
+        @media (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .logo span {
+            color: var(--dark);
+        }
+
+        .motto {
+            font-style: italic;
+            color: var(--text-light);
+            display: none;
+        }
+
+        /* Navigation */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 100%;
+            max-width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: var(--shadow);
+            z-index: 1001;
+            transition: var(--transition);
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .sidebar-nav {
+            margin-top: 2rem;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 1rem 0;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid #eee;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+
+        .sidebar-nav a:hover {
+            color: var(--primary);
+            padding-left: 0.5rem;
+        }
+
+        .sidebar-nav i {
+            margin-right: 0.75rem;
+            width: 1.5rem;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        /* Improved Sign Out Button */
+        #logoutBtn {
+            color: var(--danger);
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 5px;
+            background-color: rgba(220, 53, 69, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        #logoutBtn:hover {
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+
+        #logoutBtn i {
+            margin-right: 0;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            min-height: calc(100vh - 160px);
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 60vh;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            position: relative;
+            padding: 1rem;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            max-width: 600px;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            padding: 0 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            min-width: 150px;
+        }
+
+        .btn:hover {
+            background-color: var(--dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Auth Modal */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .auth-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .auth-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .auth-tab {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .auth-tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .auth-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        .auth-footer {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+        }
+
+        .welcome-message {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-message h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .welcome-message p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Gallery Section */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background-color: var(--primary);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .gallery-item {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .gallery-info {
+            padding: 1.25rem;
+        }
+
+        .gallery-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .gallery-price {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .gallery-desc {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .gallery-btn {
+            display: block;
+            text-align: center;
+            background-color: var(--accent);
+            color: var(--dark);
+            padding: 0.75rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .gallery-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Order Form */
+        .order-form {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -1rem;
+        }
+
+        .form-col {
+            flex: 1;
+            min-width: 250px;
+            padding: 0 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .form-submit:hover {
+            background-color: var(--dark);
+        }
+
+        /* Chat Section */
+        .chat-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .chat-header {
+            background-color: var(--dark);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: var(--secondary);
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            max-width: 80%;
+        }
+
+        .message-user {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .message-content {
+            background-color: white;
+            padding: 0.75rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            display: inline-block;
+            font-size: 0.95rem;
+        }
+
+        .message-owner {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message-owner .message-content {
+            background-color: var(--accent);
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 1rem;
+            min-height: 50px;
+        }
+
+        .chat-input button {
+            padding: 0 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            min-width: 60px;
+        }
+
+        /* Payment Section */
+        .payment-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-method {
+            flex: 1;
+            min-width: 200px;
+            padding: 1.25rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-method.active {
+            border-color: var(--primary);
+            background-color: rgba(168, 218, 220, 0.2);
+        }
+
+        .payment-method i {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--dark);
+        }
+
+        .payment-method h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-method p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* About Section */
+        .about-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .about-content {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .about-img {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .about-img img {
+            width: 100%;
+            border-radius: 10px;
+            height: auto;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .about-text h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .about-text p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        /* Location Section */
+        .location-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .map-container {
+            height: 400px;
+            background-color: #eee;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        /* Admin Dashboard */
+        .admin-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .admin-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--accent);
+            color: var(--dark);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            min-width: 150px;
+        }
+
+        .admin-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .admin-table th {
+            background-color: var(--dark);
+            color: white;
+            font-weight: 500;
+        }
+
+        .admin-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 2rem;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-section h3 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 1.3rem;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #ccc;
+            margin-bottom: 0.75rem;
+            display: block;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover {
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        /* Confirmation Modal */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1003;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .confirm-modal.active {
+            display: flex;
+        }
+
+        .confirm-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .confirm-message {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .confirm-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            min-width: 100px;
+        }
+
+        .confirm-btn.cancel {
+            background-color: #f1f1f1;
+            color: var(--text);
+        }
+
+        .confirm-btn.confirm {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: var(--danger);
+            font-size: 1.1rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+            }
+
+            .motto {
+                display: none;
+            }
+
+            .hero {
+                height: 50vh;
+                min-height: 300px;
+            }
+
+            .about-content {
+                flex-direction: column;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-col {
+                padding: 0;
+            }
+
+            .payment-method {
+                min-width: 100%;
+            }
+
+            .admin-controls {
+                flex-direction: column;
+            }
+
+            .admin-btn {
+                width: 100%;
+            }
+
+            .confirm-buttons {
+                flex-direction: column;
+            }
+
+            .confirm-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .hero {
+                border-radius: 0;
+                margin-bottom: 1rem;
+            }
+
+            .section-title::after {
+                width: 30%;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="#" class="logo">Tife<span>Bites</span></a>
+        <p class="motto">Delicious Creations for Every Occasion</p>
+        <button class="nav-toggle" id="navToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <button class="sidebar-close" id="sidebarClose">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="sidebar-nav">
+            <a href="#" class="nav-link" data-section="dashboard"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="#" class="nav-link" data-section="gallery"><i class="fas fa-images"></i> Cake Gallery</a>
+            <a href="#" class="nav-link" data-section="order"><i class="fas fa-shopping-cart"></i> Place Order</a>
+            <a href="#" class="nav-link" data-section="chat"><i class="fas fa-comments"></i> Customer Support</a>
+            <a href="#" class="nav-link" data-section="payment"><i class="fas fa-money-bill-wave"></i> Payment</a>
+            <a href="#" class="nav-link" data-section="about"><i class="fas fa-info-circle"></i> About Us</a>
+            <a href="#" class="nav-link" data-section="location"><i class="fas fa-map-marker-alt"></i> Location</a>
+            <a href="#" class="nav-link" data-section="admin" id="adminLink" style="display: none;"><i class="fas fa-user-shield"></i> Admin Dashboard</a>
+            <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="hero">
+            <h1>Premium Cake Delights</h1>
+            <p>Experience the perfect blend of taste and artistry with our handcrafted cakes for all occasions</p>
+            <button class="btn" id="authBtn">Get Started</button>
+        </section>
+
+        <!-- Dashboard Section (Visible after login) -->
+        <section class="dashboard" id="dashboard">
+            <div class="welcome-message">
+                <h2>Welcome, <span id="userFirstName">User</span>!</h2>
+                <p>Thank you for choosing Tife Bites. We're excited to serve you with our premium cake selections.</p>
+                <button class="btn" id="continueBtn">Continue to Gallery</button>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section class="gallery-section" id="gallery">
+            <h2 class="section-title">Our Cake Collection</h2>
+            <div class="gallery" id="cakeGallery">
+                <!-- Cake items will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Order Form Section -->
+        <section class="order-form" id="order">
+            <h2 class="section-title">Place Your Order</h2>
+            <form id="orderForm">
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="orderName">Full Name</label>
+                        <input type="text" id="orderName" class="form-control" required>
+                    </div>
+                    <div class="form-col">
+                        <label for="orderPhone">Phone Number</label>
+                        <input type="tel" id="orderPhone" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="orderEmail">Email Address</label>
+                        <input type="email" id="orderEmail" class="form-control" required>
+                    </div>
+                    <div class="form-col">
+                        <label for="orderDate">Delivery Date</label>
+                        <input type="date" id="orderDate" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="orderCake">Cake Selection</label>
+                        <select id="orderCake" class="form-control" required>
+                            <option value="">Select a cake</option>
+                            <!-- Options will be dynamically loaded -->
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <label for="orderSize">Cake Size</label>
+                        <select id="orderSize" class="form-control" required>
+                            <option value="">Select size</option>
+                            <option value="small">Small (6") - ₦8,000</option>
+                            <option value="medium">Medium (9") - ₦15,000</option>
+                            <option value="large">Large (12") - ₦25,000</option>
+                            <option value="xlarge">Extra Large (14") - ₦35,000</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="orderFlavor">Flavor</label>
+                        <select id="orderFlavor" class="form-control" required>
+                            <option value="">Select flavor</option>
+                            <option value="vanilla">Vanilla</option>
+                            <option value="chocolate">Chocolate</option>
+                            <option value="red-velvet">Red Velvet</option>
+                            <option value="strawberry">Strawberry</option>
+                            <option value="fruit">Fruit Cake</option>
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <label for="orderFilling">Filling</label>
+                        <select id="orderFilling" class="form-control" required>
+                            <option value="">Select filling</option>
+                            <option value="buttercream">Buttercream</option>
+                            <option value="chocolate-ganache">Chocolate Ganache</option>
+                            <option value="strawberry">Strawberry Jam</option>
+                            <option value="fruit">Fresh Fruit</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="orderMessage">Special Instructions</label>
+                        <textarea id="orderMessage" class="form-control" rows="4"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="form-submit">Place Order</button>
+            </form>
+        </section>
+
+        <!-- Chat Section -->
+        <section class="chat-container" id="chat">
+            <div class="chat-header">
+                <i class="fas fa-comments"></i> Customer Support
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will appear here -->
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Type your message...">
+                <button id="chatSend"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </section>
+
+        <!-- Payment Section -->
+        <section class="payment-section" id="payment">
+            <h2 class="section-title">Payment Options</h2>
+            <p>Select your preferred payment method to complete your order</p>
+            
+            <div class="payment-methods">
+                <div class="payment-method active" data-method="card">
+                    <i class="fas fa-credit-card"></i>
+                    <h3>Card Payment</h3>
+                    <p>Pay securely with your debit/credit card</p>
+                </div>
+                <div class="payment-method" data-method="transfer">
+                    <i class="fas fa-university"></i>
+                    <h3>Bank Transfer</h3>
+                    <p>Make direct transfer to our account</p>
+                </div>
+                <div class="payment-method" data-method="wallet">
+                    <i class="fas fa-wallet"></i>
+                    <h3>Digital Wallet</h3>
+                    <p>Pay with mobile money or USSD</p>
+                </div>
+            </div>
+
+            <!-- Card Payment Form -->
+            <form class="payment-form" id="cardPayment">
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="cardNumber">Card Number</label>
+                        <input type="text" id="cardNumber" class="form-control" placeholder="1234 5678 9012 3456" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="cardName">Cardholder Name</label>
+                        <input type="text" id="cardName" class="form-control" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-col">
+                        <label for="cardExpiry">Expiry Date</label>
+                        <input type="text" id="cardExpiry" class="form-control" placeholder="MM/YY" required>
+                    </div>
+                    <div class="form-col">
+                        <label for="cardCvv">CVV</label>
+                        <input type="text" id="cardCvv" class="form-control" placeholder="123" required>
+                    </div>
+                </div>
+                <button type="submit" class="form-submit">Pay Now</button>
+            </form>
+
+            <!-- Transfer Payment Form -->
+            <div class="payment-form" id="transferPayment" style="display: none;">
+                <div class="bank-details">
+                    <h3>Our Bank Details</h3>
+                    <p><strong>Bank Name:</strong> Zenith Bank</p>
+                    <p><strong>Account Name:</strong> Tife Bites Enterprises</p>
+                    <p><strong>Account Number:</strong> 1234567890</p>
+                    <p>After payment, please upload your receipt below:</p>
+                    <input type="file" id="receiptUpload" class="form-control">
+                </div>
+                <button class="form-submit">Confirm Payment</button>
+            </div>
+
+            <!-- Wallet Payment Form -->
+            <div class="payment-form" id="walletPayment" style="display: none;">
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="walletProvider">Select Provider</label>
+                        <select id="walletProvider" class="form-control">
+                            <option value="">Select provider</option>
+                            <option value="opay">OPay</option>
+                            <option value="palmpay">PalmPay</option>
+                            <option value="mtn">MTN Mobile Money</option>
+                            <option value="airtel">Airtel Money</option>
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <label for="walletNumber">Phone Number</label>
+                        <input type="tel" id="walletNumber" class="form-control" placeholder="08012345678">
+                    </div>
+                </div>
+                <button class="form-submit">Proceed to Payment</button>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about-section" id="about">
+            <h2 class="section-title">Our Story</h2>
+            <div class="about-content">
+                <div class="about-img">
+                    <img src="https://images.unsplash.com/photo-1606787366850-de6330128bfc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Tife Bites Team">
+                </div>
+                <div class="about-text">
+                    <h3>Baking Happiness Since 2015</h3>
+                    <p>Tife Bites began as a small home bakery with a passion for creating delicious, beautiful cakes that bring joy to every celebration. What started as a hobby quickly grew into a beloved business as word spread about our unique flavors and artistic designs.</p>
+                    <p>Today, we're proud to serve customers across the region with our premium cake creations. Each cake is handcrafted with the finest ingredients and meticulous attention to detail.</p>
+                    <p>Our mission is simple: to create memorable moments through exceptional cakes that delight all the senses.</p>
+                    <h3>Our Values</h3>
+                    <p><strong>Quality:</strong> We use only the best ingredients and never compromise on taste or freshness.</p>
+                    <p><strong>Creativity:</strong> Every cake is a unique work of art, customized to your vision.</p>
+                    <p><strong>Customer Care:</strong> Your satisfaction is our top priority from order to delivery.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Location Section -->
+        <section class="location-section" id="location">
+            <h2 class="section-title">Find Us</h2>
+            <p><i class="fas fa-map-marker-alt"></i> 123 Bakery Avenue, Victoria Island, Lagos</p>
+            <p><i class="fas fa-phone"></i> +234 812 345 6789</p>
+            <p><i class="fas fa-envelope"></i> info@tifebites.com</p>
+            <p><i class="fas fa-clock"></i> Open Monday-Saturday: 8:00 AM - 6:00 PM</p>
+            
+            <div class="map-container">
+                <p>Map would be displayed here with Google Maps API</p>
+            </div>
+        </section>
+
+        <!-- Admin Dashboard Section -->
+        <section class="admin-section" id="admin">
+            <h2 class="section-title">Admin Dashboard</h2>
+            <div class="admin-controls">
+                <button class="admin-btn" id="viewOrdersBtn">View Orders</button>
+                <button class="admin-btn" id="viewPaymentsBtn">View Payments</button>
+                <button class="admin-btn" id="addCakeBtn">Add New Cake</button>
+            </div>
+            
+            <div id="ordersTable" style="display: none;">
+                <h3>Recent Orders</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Cake</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Orders will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="paymentsTable" style="display: none;">
+                <h3>Payment History</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Amount</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentsTableBody">
+                        <!-- Payments will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="addCakeForm" style="display: none;">
+                <h3>Add New Cake</h3>
+                <form id="newCakeForm">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="cakeName">Cake Name</label>
+                            <input type="text" id="cakeName" class="form-control" required>
+                        </div>
+                        <div class="form-col">
+                            <label for="cakePrice">Price (₦)</label>
+                            <input type="number" id="cakePrice" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="cakeDescription">Description</label>
+                            <textarea id="cakeDescription" class="form-control" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="cakeImage">Upload Image</label>
+                            <input type="file" id="cakeImage" class="form-control" accept="image/*" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="form-submit">Add Cake</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#">Home</a>
+                <a href="#">Gallery</a>
+                <a href="#">Order</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>123 Bakery Avenue</p>
+                <p>Victoria Island, Lagos</p>
+                <p>+234 812 345 6789</p>
+                <p>info@tifebites.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2023 Tife Bites. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-container">
+            <button class="auth-close" id="authClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Login</div>
+                <div class="auth-tab" data-tab="register">Register</div>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="auth-form active" id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="auth-submit">Login</button>
+                <div class="auth-footer">
+                    <a href="#" id="forgotPassword">Forgot password?</a>
+                </div>
+            </form>
+            
+            <!-- Register Form -->
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label for="registerFirstName">First Name</label>
+                    <input type="text" id="registerFirstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerLastName">Last Name</label>
+                    <input type="text" id="registerLastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email Address</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Phone Number</label>
+                    <input type="tel" id="registerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirm">Confirm Password</label>
+                    <input type="password" id="registerConfirm" required>
+                </div>
+                <button type="submit" class="auth-submit">Register</button>
+                <div class="auth-footer">
+                    Already have an account? <a href="#" id="switchToLogin">Login here</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal for Sign Out -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-container">
+            <div class="confirm-message">
+                <i class="fas fa-sign-out-alt" style="font-size: 2rem; color: var(--danger); margin-bottom: 1rem;"></i>
+                <h3>Are you sure you want to sign out?</h3>
+                <p>You'll need to sign in again to access your account.</p>
+            </div>
+            <div class="confirm-buttons">
+                <button class="confirm-btn cancel" id="cancelLogout">Cancel</button>
+                <button class="confirm-btn confirm" id="confirmLogout">
+                    <span id="logoutText">Sign Out</span>
+                    <span id="logoutSpinner" class="spinner" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDBUIWCcCm9fSLWzkaqMvPZHjquPP49yps",
+            authDomain: "tife-bites.firebaseapp.com",
+            databaseURL: "https://tife-bites-default-rtdb.firebaseio.com",
+            projectId: "tife-bites",
+            storageBucket: "tife-bites.firebasestorage.app",
+            messagingSenderId: "20364945554",
+            appId: "1:20364945554:web:4aedda95fa6ac8f8a59e4b",
+            measurementId: "G-74PE46WZFR"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // DOM Elements
+        const navToggle = document.getElementById('navToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarClose = document.getElementById('sidebarClose');
+        const authBtn = document.getElementById('authBtn');
+        const authModal = document.getElementById('authModal');
+        const authClose = document.getElementById('authClose');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const confirmModal = document.getElementById('confirmModal');
+        const cancelLogout = document.getElementById('cancelLogout');
+        const confirmLogout = document.getElementById('confirmLogout');
+        const logoutText = document.getElementById('logoutText');
+        const logoutSpinner = document.getElementById('logoutSpinner');
+        const heroSection = document.getElementById('hero');
+        const dashboardSection = document.getElementById('dashboard');
+        const continueBtn = document.getElementById('continueBtn');
+        const gallerySection = document.getElementById('gallery');
+        const orderSection = document.getElementById('order');
+        const chatSection = document.getElementById('chat');
+        const paymentSection = document.getElementById('payment');
+        const aboutSection = document.getElementById('about');
+        const locationSection = document.getElementById('location');
+        const adminSection = document.getElementById('admin');
+        const adminLink = document.getElementById('adminLink');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const userFirstName = document.getElementById('userFirstName');
+        const cakeGallery = document.getElementById('cakeGallery');
+        const orderCakeSelect = document.getElementById('orderCake');
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        const paymentForms = document.querySelectorAll('.payment-form');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+        const orderForm = document.getElementById('orderForm');
+        const cardPaymentForm = document.getElementById('cardPayment');
+        const viewOrdersBtn = document.getElementById('viewOrdersBtn');
+        const viewPaymentsBtn = document.getElementById('viewPaymentsBtn');
+        const addCakeBtn = document.getElementById('addCakeBtn');
+        const ordersTable = document.getElementById('ordersTable');
+        const paymentsTable = document.getElementById('paymentsTable');
+        const addCakeForm = document.getElementById('addCakeForm');
+        const newCakeForm = document.getElementById('newCakeForm');
+        const ordersTableBody = document.getElementById('ordersTableBody');
+        const paymentsTableBody = document.getElementById('paymentsTableBody');
+
+        // Initialize UI
+        function initUI() {
+            // Check auth state
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is signed in
+                    userFirstName.textContent = user.displayName ? user.displayName.split(' ')[0] : 'User';
+                    heroSection.style.display = 'none';
+                    dashboardSection.style.display = 'block';
+                    authBtn.style.display = 'none';
+                    logoutBtn.style.display = 'block';
+                    
+                    // Check if user is admin
+                    user.getIdTokenResult().then(idTokenResult => {
+                        if (idTokenResult.claims.admin) {
+                            adminLink.style.display = 'block';
+                        }
+                    });
+                } else {
+                    // User is signed out
+                    heroSection.style.display = 'flex';
+                    dashboardSection.style.display = 'none';
+                    gallerySection.style.display = 'none';
+                    orderSection.style.display = 'none';
+                    chatSection.style.display = 'none';
+                    paymentSection.style.display = 'none';
+                    aboutSection.style.display = 'none';
+                    locationSection.style.display = 'none';
+                    adminSection.style.display = 'none';
+                    authBtn.style.display = 'block';
+                    logoutBtn.style.display = 'none';
+                    adminLink.style.display = 'none';
+                }
+            });
+
+            // Load cake gallery
+            loadCakeGallery();
+
+            // Load chat messages
+            loadChatMessages();
+        }
+
+        // Load Cake Gallery from Firebase
+        function loadCakeGallery() {
+            cakeGallery.innerHTML = '<div class="loading">Loading cakes...</div>';
+            
+            database.ref('cakes').once('value').then((snapshot) => {
+                const cakes = snapshot.val();
+                cakeGallery.innerHTML = '';
+                orderCakeSelect.innerHTML = '<option value="">Select a cake</option>';
+                
+                if (!cakes) {
+                    cakeGallery.innerHTML = '<div class="empty">No cakes available at the moment.</div>';
+                    return;
+                }
+                
+                Object.keys(cakes).forEach(key => {
+                    const cake = cakes[key];
+                    
+                    // Add to gallery
+                    const cakeItem = document.createElement('div');
+                    cakeItem.className = 'gallery-item fade-in';
+                    cakeItem.innerHTML = `
+                        <img src="${cake.image}" alt="${cake.name}" class="gallery-img">
+                        <div class="gallery-info">
+                            <h3 class="gallery-title">${cake.name}</h3>
+                            <p class="gallery-price">₦${cake.price.toLocaleString()}</p>
+                            <p class="gallery-desc">${cake.description}</p>
+                            <a href="#" class="gallery-btn" data-cake="${key}">Order Now</a>
+                        </div>
+                    `;
+                    cakeGallery.appendChild(cakeItem);
+                    
+                    // Add to order select
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = cake.name;
+                    orderCakeSelect.appendChild(option);
+                });
+            }).catch(error => {
+                cakeGallery.innerHTML = `<div class="error">Error loading cakes: ${error.message}</div>`;
+            });
+        }
+
+        // Load Chat Messages
+        function loadChatMessages() {
+            chatMessages.innerHTML = '';
+            
+            // Initial support message
+            const welcomeMsg = document.createElement('div');
+            welcomeMsg.className = 'message';
+            welcomeMsg.innerHTML = `
+                <div class="message-user">Tife Bites Support</div>
+                <div class="message-content">Hello! How can we help you today?</div>
+            `;
+            chatMessages.appendChild(welcomeMsg);
+            
+            // Load previous messages from Firebase
+            if (auth.currentUser) {
+                database.ref('chats/' + auth.currentUser.uid).limitToLast(10).on('child_added', (snapshot) => {
+                    const msg = snapshot.val();
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${msg.sender === 'user' ? 'message-owner' : ''}`;
+                    messageDiv.innerHTML = `
+                        <div class="message-user">${msg.sender === 'user' ? 'You' : 'Tife Bites Support'}</div>
+                        <div class="message-content">${msg.content}</div>
+                    `;
+                    chatMessages.appendChild(messageDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+            }
+        }
+
+        // Calculate Order Total
+        function calculateOrderTotal() {
+            const size = document.getElementById('orderSize').value;
+            let basePrice = 0;
+            
+            switch(size) {
+                case 'small': basePrice = 8000; break;
+                case 'medium': basePrice = 15000; break;
+                case 'large': basePrice = 25000; break;
+                case 'xlarge': basePrice = 35000; break;
+                default: return 0;
+            }
+            
+            // In a real app, you might add more calculations here
+            return basePrice;
+        }
+
+        // Initialize Payment with Flutterwave
+        function initializePayment(amount, email, phone, name) {
+            FlutterwaveCheckout({
+                public_key: "YOUR_FLUTTERWAVE_PUBLIC_KEY",
+                tx_ref: "TIFE-" + Date.now(),
+                amount: amount,
+                currency: "NGN",
+                payment_options: "card, banktransfer, ussd",
+                customer: {
+                    email: email,
+                    phone_number: phone,
+                    name: name
+                },
+                customizations: {
+                    title: "Tife Bites Cake Order",
+                    description: "Payment for delicious cake order",
+                    logo: "https://your-logo-url.com/logo.png"
+                },
+                callback: function(response) {
+                    if (response.status === 'successful') {
+                        // Save payment to Firebase
+                        database.ref('payments/' + response.transaction_id).set({
+                            amount: amount,
+                            email: email,
+                            date: firebase.database.ServerValue.TIMESTAMP,
+                            status: 'completed',
+                            userId: auth.currentUser ? auth.currentUser.uid : null
+                        }).then(() => {
+                            alert('Payment successful! Your order is being processed.');
+                        });
+                    } else {
+                        alert('Payment was not successful. Please try again.');
+                    }
+                },
+                onclose: function() {
+                    console.log('Payment window closed');
+                }
+            });
+        }
+
+        // Load Orders for Admin
+        function loadOrders() {
+            ordersTableBody.innerHTML = '<tr><td colspan="6" class="loading">Loading orders...</td></tr>';
+            
+            database.ref('orders').orderByChild('date').limitToLast(10).once('value').then((snapshot) => {
+                const orders = snapshot.val();
+                ordersTableBody.innerHTML = '';
+                
+                if (!orders) {
+                    ordersTableBody.innerHTML = '<tr><td colspan="6" class="empty">No orders found</td></tr>';
+                    return;
+                }
+                
+                Object.keys(orders).forEach(key => {
+                    const order = orders[key];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${key.substring(0, 8)}</td>
+                        <td>${order.name}</td>
+                        <td>${order.cake}</td>
+                        <td>${new Date(order.date).toLocaleDateString()}</td>
+                        <td>${order.status}</td>
+                        <td>
+                            <button class="admin-btn" data-order="${key}" data-action="view">View</button>
+                            <button class="admin-btn" data-order="${key}" data-action="complete">Complete</button>
+                        </td>
+                    `;
+                    ordersTableBody.appendChild(row);
+                });
+            }).catch(error => {
+                ordersTableBody.innerHTML = `<tr><td colspan="6" class="error">Error loading orders: ${error.message}</td></tr>`;
+            });
+        }
+
+        // Load Payments for Admin
+        function loadPayments() {
+            paymentsTableBody.innerHTML = '<tr><td colspan="5" class="loading">Loading payments...</td></tr>';
+            
+            database.ref('payments').orderByChild('date').limitToLast(10).once('value').then((snapshot) => {
+                const payments = snapshot.val();
+                paymentsTableBody.innerHTML = '';
+                
+                if (!payments) {
+                    paymentsTableBody.innerHTML = '<tr><td colspan="5" class="empty">No payments found</td></tr>';
+                    return;
+                }
+                
+                Object.keys(payments).forEach(key => {
+                    const payment = payments[key];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${key.substring(0, 8)}</td>
+                        <td>₦${payment.amount.toLocaleString()}</td>
+                        <td>${payment.email}</td>
+                        <td>${new Date(payment.date).toLocaleDateString()}</td>
+                        <td>${payment.status}</td>
+                    `;
+                    paymentsTableBody.appendChild(row);
+                });
+            }).catch(error => {
+                paymentsTableBody.innerHTML = `<tr><td colspan="5" class="error">Error loading payments: ${error.message}</td></tr>`;
+            });
+        }
+
+        // Event Listeners
+        navToggle.addEventListener('click', () => {
+            sidebar.classList.add('active');
+        });
+
+        sidebarClose.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+
+        authBtn.addEventListener('click', () => {
+            authModal.classList.add('active');
+        });
+
+        authClose.addEventListener('click', () => {
+            authModal.classList.remove('active');
+        });
+
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.getAttribute('data-tab');
+                authTabs.forEach(t => t.classList.remove('active'));
+                authForms.forEach(f => f.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`${tabName}Form`).classList.add('active');
+            });
+        });
+
+        switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            authTabs.forEach(t => t.classList.remove('active'));
+            authForms.forEach(f => f.classList.remove('active'));
+            document.querySelector('.auth-tab[data-tab="login"]').classList.add('active');
+            loginForm.classList.add('active');
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    authModal.classList.remove('active');
+                    loginForm.reset();
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        });
+
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const firstName = document.getElementById('registerFirstName').value;
+            const lastName = document.getElementById('registerLastName').value;
+            const phone = document.getElementById('registerPhone').value;
+            
+            if (password !== document.getElementById('registerConfirm').value) {
+                alert("Passwords don't match!");
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Update user profile
+                    return userCredential.user.updateProfile({
+                        displayName: `${firstName} ${lastName}`
+                    }).then(() => {
+                        // Save additional user data to database
+                        return database.ref('users/' + userCredential.user.uid).set({
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            phone: phone,
+                            isAdmin: false // Set to true manually in Firebase for admin users
+                        });
+                    });
+                })
+                .then(() => {
+                    authModal.classList.remove('active');
+                    registerForm.reset();
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        });
+
+        // Enhanced Sign Out Functionality
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            confirmModal.classList.add('active');
+        });
+
+        cancelLogout.addEventListener('click', () => {
+            confirmModal.classList.remove('active');
+        });
+
+        confirmLogout.addEventListener('click', () => {
+            // Show loading state
+            logoutText.style.display = 'none';
+            logoutSpinner.style.display = 'inline-block';
+            
+            auth.signOut()
+                .then(() => {
+                    // Reset all sections
+                    dashboardSection.style.display = 'none';
+                    gallerySection.style.display = 'none';
+                    orderSection.style.display = 'none';
+                    chatSection.style.display = 'none';
+                    paymentSection.style.display = 'none';
+                    aboutSection.style.display = 'none';
+                    locationSection.style.display = 'none';
+                    adminSection.style.display = 'none';
+                    
+                    // Close modals
+                    confirmModal.classList.remove('active');
+                    sidebar.classList.remove('active');
+                })
+                .catch(error => {
+                    alert('Error signing out: ' + error.message);
+                })
+                .finally(() => {
+                    // Reset button state
+                    logoutText.style.display = 'inline-block';
+                    logoutSpinner.style.display = 'none';
+                });
+        });
+
+        continueBtn.addEventListener('click', () => {
+            dashboardSection.style.display = 'none';
+            gallerySection.style.display = 'block';
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = link.getAttribute('data-section');
+                
+                // Hide all sections
+                dashboardSection.style.display = 'none';
+                gallerySection.style.display = 'none';
+                orderSection.style.display = 'none';
+                chatSection.style.display = 'none';
+                paymentSection.style.display = 'none';
+                aboutSection.style.display = 'none';
+                locationSection.style.display = 'none';
+                adminSection.style.display = 'none';
+                ordersTable.style.display = 'none';
+                paymentsTable.style.display = 'none';
+                addCakeForm.style.display = 'none';
+                
+                // Show selected section
+                if (section === 'dashboard') {
+                    dashboardSection.style.display = 'block';
+                } else {
+                    document.getElementById(section).style.display = 'block';
+                }
+                
+                // Special cases
+                if (section === 'chat') {
+                    loadChatMessages();
+                }
+                
+                if (section === 'admin') {
+                    loadOrders();
+                    ordersTable.style.display = 'block';
+                }
+                
+                // Close sidebar
+                sidebar.classList.remove('active');
+            });
+        });
+
+        paymentMethods.forEach(method => {
+            method.addEventListener('click', () => {
+                const methodName = method.getAttribute('data-method');
+                paymentMethods.forEach(m => m.classList.remove('active'));
+                paymentForms.forEach(f => f.style.display = 'none');
+                method.classList.add('active');
+                document.getElementById(`${methodName}Payment`).style.display = 'block';
+            });
+        });
+
+        orderForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const orderData = {
+                name: document.getElementById('orderName').value,
+                phone: document.getElementById('orderPhone').value,
+                email: document.getElementById('orderEmail').value,
+                date: document.getElementById('orderDate').value,
+                cake: document.getElementById('orderCake').value,
+                size: document.getElementById('orderSize').value,
+                flavor: document.getElementById('orderFlavor').value,
+                filling: document.getElementById('orderFilling').value,
+                message: document.getElementById('orderMessage').value,
+                userId: auth.currentUser ? auth.currentUser.uid : null,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                status: 'pending'
+            };
+            
+            const newOrderRef = database.ref('orders').push();
+            newOrderRef.set(orderData)
+                .then(() => {
+                    alert('Order placed successfully! Proceed to payment.');
+                    // Show payment section
+                    paymentSection.style.display = 'block';
+                    window.scrollTo(0, paymentSection.offsetTop);
+                })
+                .catch(error => {
+                    alert('Error placing order: ' + error.message);
+                });
+        });
+
+        cardPaymentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const amount = calculateOrderTotal();
+            const email = document.getElementById('orderEmail').value;
+            const phone = document.getElementById('orderPhone').value;
+            const name = document.getElementById('orderName').value;
+            
+            if (amount <= 0) {
+                alert('Please complete your order first');
+                return;
+            }
+            
+            initializePayment(amount, email, phone, name);
+        });
+
+        chatSend.addEventListener('click', () => {
+            const message = chatInput.value.trim();
+            if (message && auth.currentUser) {
+                // Save message to Firebase
+                const newMessageRef = database.ref('chats/' + auth.currentUser.uid).push();
+                newMessageRef.set({
+                    content: message,
+                    sender: 'user',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                }).then(() => {
+                    chatInput.value = '';
+                    
+                    // Simulate response (in real app, this would be from admin)
+                    setTimeout(() => {
+                        const responseRef = database.ref('chats/' + auth.currentUser.uid).push();
+                        responseRef.set({
+                            content: "Thank you for your message. We'll get back to you shortly.",
+                            sender: 'support',
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        });
+                    }, 1000);
+                });
+            }
+        });
+
+        // Admin Controls
+        viewOrdersBtn.addEventListener('click', () => {
+            ordersTable.style.display = 'block';
+            paymentsTable.style.display = 'none';
+            addCakeForm.style.display = 'none';
+            loadOrders();
+        });
+
+        viewPaymentsBtn.addEventListener('click', () => {
+            ordersTable.style.display = 'none';
+            paymentsTable.style.display = 'block';
+            addCakeForm.style.display = 'none';
+            loadPayments();
+        });
+
+        addCakeBtn.addEventListener('click', () => {
+            ordersTable.style.display = 'none';
+            paymentsTable.style.display = 'none';
+            addCakeForm.style.display = 'block';
+        });
+
+        newCakeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const cakeName = document.getElementById('cakeName').value;
+            const cakePrice = parseFloat(document.getElementById('cakePrice').value);
+            const cakeDescription = document.getElementById('cakeDescription').value;
+            const cakeImage = document.getElementById('cakeImage').files[0];
+            
+            if (!cakeImage) {
+                alert('Please upload an image');
+                return;
+            }
+            
+            // Upload image to Firebase Storage
+            const storageRef = storage.ref('cakes/' + cakeImage.name);
+            const uploadTask = storageRef.put(cakeImage);
+            
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    // Progress monitoring could be added here
+                }, 
+                (error) => {
+                    alert('Error uploading image: ' + error.message);
+                }, 
+                () => {
+                    // Upload complete, get download URL
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        // Save cake data to database
+                        const newCakeRef = database.ref('cakes').push();
+                        newCakeRef.set({
+                            name: cakeName,
+                            price: cakePrice,
+                            description: cakeDescription,
+                            image: downloadURL,
+                            createdAt: firebase.database.ServerValue.TIMESTAMP
+                        }).then(() => {
+                            alert('Cake added successfully!');
+                            newCakeForm.reset();
+                            loadCakeGallery();
+                        });
+                    });
+                }
+            );
+        });
+
+        // Initialize the UI
+        initUI();
+    </script>
+</body>
+</html>
